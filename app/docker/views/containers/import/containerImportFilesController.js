@@ -2,11 +2,14 @@ import angular from "angular";
 
 class ContainerImportFilesController {
   /* @ngInject */
-  constructor($transition$, ContainerService, Notifications, HttpRequestHelper) {
+  constructor($transition$, ContainerService, Notifications, HttpRequestHelper, $async) {
     this.$transition$ = $transition$;
     this.ContainerService = ContainerService;
     this.Notifications = Notifications;
     this.HttpRequestHelper = HttpRequestHelper;
+    this.$async = $async;
+
+    this.uploadFilesAsync = this.uploadFilesAsync.bind(this);
   }
 
   async $onInit() {
@@ -29,7 +32,11 @@ class ContainerImportFilesController {
     }
   }
 
-  async uploadFiles() {
+  uploadFiles() {
+    this.$async(this.uploadFilesAsync);
+  }
+
+  async uploadFilesAsync() {
     this.state.actionInProgress = true;
     const containerId = this.container.Id;
     const file = this.formValues.UploadFile;
@@ -42,8 +49,9 @@ class ContainerImportFilesController {
     } finally {
       this.state.actionInProgress = false;
     }
-	}
+  }
 }
+
 export default ContainerImportFilesController;
 angular
   .module("portainer.docker")
